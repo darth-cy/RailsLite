@@ -1,10 +1,9 @@
 require 'webrick'
 require 'json'
 
-module ActiveRecordLite
+module RailsLite
 
   class Session
-    attr_reader :session_data
 
     def initialize(req)
       cookie = req.cookies.find{ |ck| ck.name == "_app_lite" }
@@ -26,6 +25,9 @@ module ActiveRecordLite
     def store_session(res)
       res.cookies << WEBrick::Cookie.new("_app_lite", @session_data.to_json)
     end
+
+    private
+    attr_accessor :session_data
   end
 
 end

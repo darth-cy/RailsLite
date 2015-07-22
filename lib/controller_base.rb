@@ -1,11 +1,12 @@
-require 'activesupport'
-require 'activesupport/core_ext'
-require 'activesupport/inflector'
+require 'active_support'
+require 'active_support/core_ext'
+require 'active_support/inflector'
 require 'erb'
 
 require_relative "session"
+require_relative "params"
 
-module ActiveRecordLite
+module RailsLite
 
   class ControllerBase
     attr_reader :params, :session
@@ -14,7 +15,8 @@ module ActiveRecordLite
     def initialize(req, res, route_params = {})
       @req = req
       @res = res
-      @session = Session.new(req)
+      @session = Session.new(@req)
+      @params = Params.new(@req)
     end
 
     def redirect_to(url)
@@ -23,7 +25,9 @@ module ActiveRecordLite
       end
       @res["location"] = url
       @res.status = 302
+
       @built_response = :redirected
+      @session.store_session(@res)
     end
 
     def render(template_name)
@@ -31,7 +35,9 @@ module ActiveRecordLite
       path = "views/#{folder_name}/#{template_name}.html.erb"
       htmls = File.read(path)
       render_content(htmls, "text/html")
+
       @built_response = :rendered
+      @session.store_session(@res)
     end
 
     def render_content(content, content_type)
@@ -40,15 +46,22 @@ module ActiveRecordLite
       end
       @res.body = content
       @res.content_type = content_type
-      @built_response = content
+
+      @built_response = :rendered
+      @session.store_session(@res)
     end
 
+    def session
+      @session ||= Session.new(@req)
+    end
+
+    def params
+      @params ||= Param.new(@req)
+    end
 
     private
     def already_built_response?
       !!@built_response
     end
-
-
   end
 end
