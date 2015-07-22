@@ -37,7 +37,6 @@ module RailsLite
 
     def run(req, res)
       route = match(req)
-      debugger
       if route
         route.run(req, res)
       else
