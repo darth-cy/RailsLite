@@ -16,7 +16,7 @@ module RailsLite
       @req = req
       @res = res
       @session = Session.new(@req)
-      @params = Params.new(@req)
+      @params = Params.new(@req, route_params)
     end
 
     def redirect_to(url)
@@ -57,6 +57,10 @@ module RailsLite
 
     def params
       @params ||= Param.new(@req)
+    end
+
+    def invoke_action(action_name)
+      self.send action_name
     end
 
     private

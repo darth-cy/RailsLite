@@ -1,4 +1,5 @@
 require 'uri'
+require 'byebug'
 
 module RailsLite
 
@@ -6,9 +7,9 @@ module RailsLite
 
     def initialize(req, routes_params = {})
       @params_data = {}
-      merge_params(@params_data, routes_params)
-      merge_params(@params_data, parse_query(req.query_string))
-      merge_params(@params_data, parse_query(req.body))
+      @params_data = @params_data.merge(routes_params)
+      @params_data = @params_data.merge(parse_query(req.query_string))
+      @params_data = @params_data.merge(parse_query(req.body))
     end
 
     def [](key)
@@ -51,10 +52,6 @@ module RailsLite
 
     def parse_key(key)
       key.split(/\]\[|\[|\]/)
-    end
-
-    def merge_params(params, new_params)
-      params = params.merge(new_params)
     end
   end
 

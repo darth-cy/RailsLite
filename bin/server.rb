@@ -1,17 +1,34 @@
 require 'webrick'
 require 'json'
+require 'byebug'
 
 require_relative '../lib/controller_base'
+require_relative '../lib/router.rb'
 
 server = WEBrick::HTTPServer.new(Port: 3000)
 
-class CatsController < ActiveRecordLite::ControllerBase
+class CatsController < RailsLite::ControllerBase
+
+  def index
+    render :index
+  end
+
+end
+
+class MyRouterClass < RailsLite::Router
+  extendable_actions :patch
 end
 
 server.mount_proc("/") do |req, res|
+  router = MyRouterClass.new
+  router.draw do
+    get Regexp.new("^/cats$"), CatsController, :index
+  end
+  router.run(req, res)
 
-  controller = CatsController.new(req, res)
-  res.body = "#{controller.params}"
+  # render the controller params.
+  # controller = CatsController.new(req, res)
+  # res.body = "#{controller.params}"
 
   # Rendering the request line of the requeset.
   # req_line = req.request_line
