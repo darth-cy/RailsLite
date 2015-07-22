@@ -1,5 +1,9 @@
 require 'activesupport'
+require 'activesupport/core_ext'
+require 'activesupport/inflector'
+require 'erb'
 
+require_relative "session"
 
 module ActiveRecordLite
 
@@ -10,11 +14,7 @@ module ActiveRecordLite
     def initialize(req, res, route_params = {})
       @req = req
       @res = res
-
-    end
-
-    def already_built_response?
-      !!@built_response
+      @session = Session.new(req)
     end
 
     def redirect_to(url)
@@ -23,7 +23,15 @@ module ActiveRecordLite
       end
       @res["location"] = url
       @res.status = 302
-      @built_response = url
+      @built_response = :redirected
+    end
+
+    def render(template_name)
+      folder_name = "#{self.class}".underscore
+      path = "views/#{folder_name}/#{template_name}.html.erb"
+      htmls = File.read(path)
+      render_content(htmls, "text/html")
+      @built_response = :rendered
     end
 
     def render_content(content, content_type)
@@ -35,32 +43,12 @@ module ActiveRecordLite
       @built_response = content
     end
 
-    def render(template_name)
 
+    private
+    def already_built_response?
+      !!@built_response
     end
 
-    def initialize(req, res, route_params = {})
-      @session = Phase4::Session.new(req)
-      @params = Phase5::Params.new(req)
-      @req = req
-      @res = res
-    end
-
-    def render_content(content, content_type)
-      @res.content_type = content_type
-      @res.body = content
-      if already_built_response?
-        raise
-      end
-      @built_response = @res.body
-      @session.store_session(@res)
-    end
-
-    # use this with the router to call action_name (:index, :show, :create...)
-    def invoke_action(name)
-      self.send name
-    end
-  end
 
   end
 end
