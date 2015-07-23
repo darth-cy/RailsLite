@@ -34,7 +34,8 @@ module RailsLite
     def render(template_name)
       folder_name = "#{self.class}".underscore
       path = "app/views/#{folder_name}/#{template_name}.html.erb"
-      res.body = ERB.new(File.read(path)).result(binding)
+      res.body = ERB.new(File.read("app/views/application.html.erb")).result(binding)
+      res.body += ERB.new(File.read(path)).result(binding)
       res.content_type = "text/html"
 
       @built_response = :rendered
