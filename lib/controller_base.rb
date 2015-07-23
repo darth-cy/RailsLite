@@ -5,6 +5,7 @@ require 'erb'
 
 require_relative "session"
 require_relative "params"
+require_relative "flash"
 
 module RailsLite
 
@@ -32,9 +33,9 @@ module RailsLite
 
     def render(template_name)
       folder_name = "#{self.class}".underscore
-      path = "views/#{folder_name}/#{template_name}.html.erb"
-      htmls = File.read(path)
-      render_content(htmls, "text/html")
+      path = "app/views/#{folder_name}/#{template_name}.html.erb"
+      res.body = ERB.new(File.read(path)).result(binding)
+      res.content_type = "text/html"
 
       @built_response = :rendered
       @session.store_session(@res)

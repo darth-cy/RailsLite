@@ -23,7 +23,9 @@ module RailsLite
     end
 
     def store_session(res)
-      res.cookies << WEBrick::Cookie.new("_app_lite", @session_data.to_json)
+      unless @session_data.empty?
+        res.cookies << WEBrick::Cookie.new("_app_lite", @session_data.to_json)
+      end
     end
 
     private

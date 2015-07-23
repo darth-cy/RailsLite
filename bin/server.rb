@@ -4,21 +4,9 @@ require 'json'
 require_relative '../lib/controller_base'
 require_relative '../lib/router.rb'
 
-Dir["../app/controller/*.rb"].each { |file| require file }
+require_relative '../app/controller/cats_controller.rb'
 
 server = WEBrick::HTTPServer.new(Port: 3000)
-
-class CatsController < RailsLite::ControllerBase
-
-  def index
-    render :index
-  end
-
-  def show
-    render :show
-  end
-
-end
 
 class MyRouterClass < RailsLite::Router
   extendable_actions :patch
@@ -28,6 +16,7 @@ server.mount_proc("/") do |req, res|
   router = MyRouterClass.new
   router.draw do
     get Regexp.new("^/cats$"), CatsController, :index
+    patch Regexp.new("^/cats$"), CatsController, :update
     get Regexp.new("^/cats/(?<cat_id>\\d+)"), CatsController, :show
   end
   router.run(req, res)
