@@ -18,7 +18,7 @@ server.mount_proc("/") do |req, res|
     get Regexp.new("^/nets$"), NetsController, :index
     get Regexp.new("^/nets/(?<id>\\d+)"), NetsController, :show
     get Regexp.new("^/nets/new$"), NetsController, :new
-    post Regexp.new("^/nets/(?<id>\\d+)"), NetsController, :create
+    post Regexp.new("^/nets$"), NetsController, :create
     get Regexp.new("^/nets/define"), NetsController, :define
   end
   router.run(req, res)
