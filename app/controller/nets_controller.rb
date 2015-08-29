@@ -27,6 +27,4 @@ class NetsController < RailsLite::ControllerBase
     @page_title = "Customized Route"
     render :define
   end
-
-
 end
